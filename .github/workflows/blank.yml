@@ -38,6 +38,14 @@ jobs:
 
         steps:
             -   uses: actions/checkout@v4
+                with:
+                token: ${{ secrets.ACCESS_TOKEN }}
+
+            -   name: Debug Info
+                run: |
+                    echo "Workspace: ${{ github.workspace }}"
+                    echo "Repository: ${{ github.repository }}"
+                    echo "Ref: ${{ github.ref }}"
 
             -   uses: "symplify/monorepo-split-github-action@2.1"
                 with:
