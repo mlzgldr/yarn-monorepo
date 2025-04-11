@@ -51,6 +51,7 @@ jobs:
                     
                     # 设置目录权限
                     mkdir -p /tmp/monorepo_split/clone_directory
+                    mkdir -p /tmp/monorepo_split/build_directory
                     chmod -R 777 /tmp/monorepo_split
 
                     # 配置 Git 用户信息
@@ -58,16 +59,55 @@ jobs:
                     git config --global user.email "mlzgldr@163.com"
 
                     # 测试克隆命令
-                    git clone https://${{ secrets.ACCESS_TOKEN }}@github.com/mlzgldr/demo-react-vite.git /tmp/monorepo_split/clone_directory
+                    echo "git clone https://${{ secrets.ACCESS_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git /tmp/monorepo_split/clone_directory"
+                    git clone https://${{ secrets.ACCESS_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git /tmp/monorepo_split/clone_directory
 
-            -   name: Split package
-                uses: "symplify/monorepo-split-github-action@2.1"
-                with:
-                    package_directory: 'packages/${{ matrix.package.local_path }}'
-                    repository_organization: 'mlzgldr'
-                    repository_name: '${{ matrix.package.split_repository }}'
-                    repository_host: github.com
-                    user_name: "mlzgldr"
-                    user_email: "mlzgldr@163.com"
+                    echo "检出clone_directory代码"
+                    cd /tmp/monorepo_split/clone_directory
+                    git fetch
+
+                    # Try to checkout branch
+                    if ! git checkout ${{ github.ref_name }}; then
+                        echo "Creating new branch ${{ github.ref_name }}"
+                        git checkout -b ${{ github.ref_name }}
+                        git push --quiet origin ${{ github.ref_name }}
+                    fi
+
+                    echo "复制.git文件到build_directory"
+                    mkdir -p /tmp/monorepo_split/build_directory/.git
+                    cp -r /tmp/monorepo_split/clone_directory/.git /tmp/monorepo_split/build_directory/
+
+                    rm -rf /tmp/monorepo_split/clone_directory
+
+                    echo "复制package内容到build_directory"
+                    cp -ra ${{ github.workspace }}/packages/${{ matrix.package.local_path }}/. /tmp/monorepo_split/build_directory/
+
+                    echo "build_directory里的内容:"
+                    ls -la /tmp/monorepo_split/build_directory
+
+                    COMMIT_MSG=$(git show -s --format=%B ${{ github.sha }})
+                    echo "COMMIT_MSG=$COMMIT_MSG" >> $GITHUB_ENV
+
+                    cd /tmp/monorepo_split/build_directory
+          
+                    # Check for changes
+                    git status
+                    git status --porcelain > /tmp/changes.txt
+                    
+                    if [ -s /tmp/changes.txt ]; then
+                        echo "Adding changes..."
+                        git add .
+                        
+                        echo "Committing changes..."
+                        git commit --message "$COMMIT_MSG"
+                        
+                        echo "Pushing changes..."
+                        git push --quiet origin ${{ github.ref_name }}
+                    else
+                        echo "No files to change"
+                    fi
+
+                    rm -rf /tmp/monorepo_split
+
 
 
