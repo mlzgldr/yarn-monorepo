@@ -13,24 +13,39 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+env:
+    # 1. for Github split
+    GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    packages_split:
+        runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+        strategy:
+            fail-fast: false
+            matrix:
+                # define package to repository map
+                package:
+                    -
+                        local_path: 'demo-react-native'
+                        split_repository: 'demo-react-native'
+                    -
+                        local_path: 'demo-react-vite'
+                        split_repository: 'demo-react-vite'
+                    -
+                        local_path: 'demo-taro-react'
+                        split_repository: 'demo-taro-react'
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+        steps:
+            -   uses: actions/checkout@v4
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+            -   uses: "mlzgldr/yarn-monorepo"
+                with:
+                    package_directory: 'packages/${{ matrix.package.local_path }}'
+                    repository_organization: 'mlzgldr'
+                    repository_name: '${{ matrix.package.split_repository }}'
+                    repository_host: github.com
+                    user_name: "mlzgldr"
+                    user_email: "mlzgldr@163.com"
+
+
