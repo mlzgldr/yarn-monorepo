@@ -53,6 +53,13 @@ jobs:
                     mkdir -p /tmp/monorepo_split/clone_directory
                     chmod -R 777 /tmp/monorepo_split
 
+                    # 配置 Git 用户信息
+                    git config --global user.name "mlzgldr"
+                    git config --global user.email "mlzgldr@163.com"
+
+                    # 测试克隆命令
+                    git clone https://${{ secrets.ACCESS_TOKEN }}@github.com/mlzgldr/demo-react-vite.git /tmp/monorepo_split/clone_directory
+
             -   name: Split package
                 uses: "symplify/monorepo-split-github-action@2.1"
                 with:
