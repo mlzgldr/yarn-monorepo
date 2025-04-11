@@ -62,7 +62,7 @@ jobs:
 
                     # 测试克隆命令
                     echo "克隆仓库"
-                    git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git /tmp/monorepo_split/clone_directory
+                    git clone https://${{ secrets.ACCESS_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git /tmp/monorepo_split/clone_directory
 
                     echo "检出clone_directory代码"
                     cd /tmp/monorepo_split/clone_directory
@@ -119,7 +119,7 @@ jobs:
                         echo "提交变更"
                         git commit --message "$COMMIT_MSG"
                         
-                        echo "Pushing changes..."
+                        echo "推送修改"
                         git push --quiet origin ${{ github.ref_name }}
                     else
                         echo "没有变更"
