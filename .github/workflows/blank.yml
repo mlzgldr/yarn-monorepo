@@ -70,6 +70,7 @@ jobs:
                     if ! git rev-parse --verify --quiet ${{ github.ref_name }}; then
                         echo "创建新分支 ${{ github.ref_name }}"
                         git checkout -b ${{ github.ref_name }}
+                        echo "推送新分支"
                         git push https://${{ secrets.ACCESS_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git ${{ github.ref_name }}
                     else
                         git checkout ${{ github.ref_name }}
