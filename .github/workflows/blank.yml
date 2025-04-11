@@ -55,6 +55,8 @@ jobs:
                     chmod -R 777 /tmp/monorepo_split
 
                     # 配置 Git 用户信息
+                    git config --blobal --unset credential.helper
+                    git config --system --unset credential.helper
                     git config --global user.name "mlzgldr"
                     git config --global user.email "mlzgldr@163.com"
 
@@ -73,8 +75,7 @@ jobs:
                         echo "创建新分支 ${{ github.ref_name }}"
                         git checkout -b ${{ github.ref_name }}
                         echo "推送新分支"
-                        #git remote set-url origin https://${{ secrets.ACCESS_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
-                        git push origin --quiet ${{ github.ref_name }}
+                        git push origin https://mlzgldr:${{ secrets.ACCESS_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git ${{ github.ref_name }}
                     else
                         git checkout ${{ github.ref_name }}
                     fi
