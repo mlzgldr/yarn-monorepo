@@ -51,7 +51,6 @@ jobs:
 
                     git config user.name "mlzgldr"
                     git config user.email "mlzgldr@163.com"
-                    git config user.password "490058608lock"
                     
                     # 设置目录权限
                     mkdir -p /tmp/monorepo_split/clone_directory
@@ -70,6 +69,7 @@ jobs:
                     if ! git rev-parse --verify --quiet ${{ github.ref_name }}; then
                         echo "创建新分支 ${{ github.ref_name }}"
                         git checkout -b ${{ github.ref_name }}
+                        ls -la /tmp/monorepo_split/clone_directory
                         echo "推送新分支 git push origin ${{ github.ref_name }}"
                         git push origin ${{ github.ref_name }}
                     else
