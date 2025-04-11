@@ -1,30 +1,27 @@
-# This is a basic workflow to help you get started with Actions
+name: Packages Split
 
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+    tags:
+      - '*'
 
 env:
-    # 1. for Github split
     GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
 jobs:
     packages_split:
         runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            packages: write
+            # 添加更多权限
+            pull-requests: write
+            issues: write
 
         strategy:
             fail-fast: false
             matrix:
-                # define package to repository map
                 package:
                     -
                         local_path: 'demo-react-native'
@@ -37,15 +34,46 @@ jobs:
                         split_repository: 'demo-taro-react'
 
         steps:
-            -   uses: actions/checkout@v4
+            # 第一步：检出代码
+            - uses: actions/checkout@v4
+              with:
+                  token: ${{ secrets.ACCESS_TOKEN }}
+                  fetch-depth: 0
 
-            -   uses: "symplify/monorepo-split-github-action@2.1"
-                with:
-                    package_directory: 'packages/${{ matrix.package.local_path }}'
-                    repository_organization: 'mlzgldr'
-                    repository_name: '${{ matrix.package.split_repository }}'
-                    repository_host: github.com
-                    user_name: "mlzgldr"
-                    user_email: "mlzgldr@163.com"
+            # 第二步：创建仓库（如果不存在）
+            - name: Create repositories if they don't exist
+              uses: actions/github-script@v7
+              with:
+                  github-token: ${{ secrets.ACCESS_TOKEN }}
+                  script: |
+                    const repos = [
+                      'demo-react-native',
+                      'demo-react-vite',
+                      'demo-taro-react'
+                    ];
+                    for (const repo of repos) {
+                      try {
+                        await github.rest.repos.createForAuthenticatedUser({
+                          name: repo,
+                          private: false,
+                          auto_init: true
+                        });
+                        console.log(`Created repository: ${repo}`);
+                      } catch (error) {
+                        if (error.status === 422) {
+                          console.log(`Repository ${repo} already exists`);
+                        } else {
+                          console.error(`Error creating ${repo}:`, error);
+                        }
+                      }
+                    }
 
-
+            # 第三步：执行拆分
+            - uses: "symplify/monorepo-split-github-action@2.1"
+              with:
+                  package_directory: 'packages/${{ matrix.package.local_path }}'
+                  repository_organization: 'mlzgldr'  # 你的 GitHub 用户名
+                  repository_name: '${{ matrix.package.split_repository }}'
+                  repository_host: github.com
+                  user_name: "mlzgldr"
+                  user_email: "mlzgldr@163.com"
