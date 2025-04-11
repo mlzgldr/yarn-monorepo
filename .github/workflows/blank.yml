@@ -39,7 +39,7 @@ jobs:
         steps:
             -   uses: actions/checkout@v4
 
-            -   uses: "mlzgldr/yarn-monorepo"
+            -   uses: mlzgldr/yarn-monorepo-split@main
                 with:
                     package_directory: 'packages/${{ matrix.package.local_path }}'
                     repository_organization: 'mlzgldr'
