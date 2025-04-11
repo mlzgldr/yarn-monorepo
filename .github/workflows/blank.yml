@@ -66,11 +66,13 @@ jobs:
                     cd /tmp/monorepo_split/clone_directory
                     git fetch
 
-                    # Try to checkout branch
-                    if ! git checkout ${{ github.ref_name }}; then
-                        echo "Creating new branch ${{ github.ref_name }}"
+                    # 修改分支检查逻辑
+                    if ! git rev-parse --verify --quiet ${{ github.ref_name }}; then
+                        echo "创建新分支 ${{ github.ref_name }}"
                         git checkout -b ${{ github.ref_name }}
-                        git push --quiet origin ${{ github.ref_name }}
+                        git push https://${{ secrets.ACCESS_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git ${{ github.ref_name }}
+                    else
+                        git checkout ${{ github.ref_name }}
                     fi
 
                     echo "复制.git文件到build_directory"
