@@ -58,6 +58,8 @@ jobs:
                     git config --global user.name "mlzgldr"
                     git config --global user.email "mlzgldr@163.com"
 
+                    
+
                     # 测试克隆命令
                     echo "git clone https://${{ secrets.ACCESS_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git /tmp/monorepo_split/clone_directory"
                     git clone https://${{ secrets.ACCESS_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git /tmp/monorepo_split/clone_directory
@@ -71,7 +73,8 @@ jobs:
                         echo "创建新分支 ${{ github.ref_name }}"
                         git checkout -b ${{ github.ref_name }}
                         echo "推送新分支"
-                        git push https://${{ secrets.ACCESS_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git ${{ github.ref_name }}
+                        git remote set-url origin https://${{ secrets.ACCESS_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
+                        git push origin ${{ github.ref_name }}
                     else
                         git checkout ${{ github.ref_name }}
                     fi
