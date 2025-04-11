@@ -65,6 +65,7 @@ jobs:
                     cd /tmp/monorepo_split/clone_directory
                     git fetch
 
+
                     # 修改分支检查逻辑
                     if ! git rev-parse --verify --quiet ${{ github.ref_name }}; then
                         echo "创建新分支 ${{ github.ref_name }}"
