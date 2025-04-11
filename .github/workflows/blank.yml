@@ -54,14 +54,6 @@ jobs:
                     mkdir -p /tmp/monorepo_split/build_directory
                     chmod -R 777 /tmp/monorepo_split
 
-                    # 配置 Git 用户信息
-                    git config --blobal --unset credential.helper
-                    git config --system --unset credential.helper
-                    git config --global user.name "mlzgldr"
-                    git config --global user.email "mlzgldr@163.com"
-
-                    
-
                     # 测试克隆命令
                     echo "git clone https://${{ secrets.ACCESS_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git /tmp/monorepo_split/clone_directory"
                     git clone https://${{ secrets.ACCESS_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git /tmp/monorepo_split/clone_directory
