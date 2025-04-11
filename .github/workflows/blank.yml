@@ -70,14 +70,15 @@ jobs:
                     git branch -a
 
                     # 修改分支检查逻辑
-                    if ! git rev-parse --verify --quiet ${{ github.ref_name }}; then
+                    if git ls-remote --heads origin ${{ github.ref_name }} | grep -q ${{ github.ref_name }}; then
+                        echo "检出已存在的分支 ${{ github.ref_name }}"
+                        git checkout -b ${{ github.ref_name }} origin/${{ github.ref_name }}
+                    else
                         echo "创建新分支 ${{ github.ref_name }}"
                         git checkout -b ${{ github.ref_name }}
                         ls -la /tmp/monorepo_split/clone_directory
                         echo "推送新分支 git push origin ${{ github.ref_name }}"
                         git push origin ${{ github.ref_name }}
-                    else
-                        git checkout ${{ github.ref_name }}
                     fi
 
                     echo "复制.git文件到build_directory"
