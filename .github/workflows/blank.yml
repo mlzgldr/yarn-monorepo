@@ -101,7 +101,6 @@ jobs:
                     ls -la /tmp/monorepo_split/build_directory
 
                     COMMIT_MSG=$(git show -s --format=%B ${{ github.sha }})
-                    echo "COMMIT_MSG=$COMMIT_MSG" >> $GITHUB_ENV
 
                     cd /tmp/monorepo_split/build_directory
           
@@ -110,16 +109,16 @@ jobs:
                     git status --porcelain > /tmp/changes.txt
                     
                     if [ -s /tmp/changes.txt ]; then
-                        echo "Adding changes..."
+                        echo "添加变更"
                         git add .
                         
-                        echo "Committing changes..."
+                        echo "提交变更"
                         git commit --message "$COMMIT_MSG"
                         
                         echo "Pushing changes..."
                         git push --quiet origin ${{ github.ref_name }}
                     else
-                        echo "No files to change"
+                        echo "没有变更"
                     fi
 
                     # 返回到初始目录
