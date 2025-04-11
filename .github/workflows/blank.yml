@@ -48,6 +48,10 @@ jobs:
                     git config --global --add safe.directory /github/workspace
                     git config --global --add safe.directory /tmp/monorepo_split/build_directory
                     git config --global --add safe.directory /tmp/monorepo_split/clone_directory
+
+                    git config user.name "mlzgldr"
+                    git config user.email "mlzgldr@163.com"
+                    git config user.password ${{ secrets.GITHUB_TOKEN }}
                     
                     # 设置目录权限
                     mkdir -p /tmp/monorepo_split/clone_directory
