@@ -1,6 +1,6 @@
 {
   "name": "yarn-monorepo",
-  "private": true,
+  "private": false,
   "workspaces": [
     "packages/*"
   ],
