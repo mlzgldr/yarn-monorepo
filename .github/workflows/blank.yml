@@ -104,6 +104,10 @@ jobs:
 
                     cd /tmp/monorepo_split/build_directory
           
+                    # 重新设置 Git 用户信息
+                    git config user.name "mlzgldr"
+                    git config user.email "mlzgldr@163.com"
+
                     # Check for changes
                     git status
                     git status --porcelain > /tmp/changes.txt
