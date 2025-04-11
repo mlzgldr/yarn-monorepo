@@ -57,6 +57,9 @@ jobs:
                     mkdir -p /tmp/monorepo_split/build_directory
                     chmod -R 777 /tmp/monorepo_split
 
+                    # 保存初始目录
+                    INITIAL_DIR=$(pwd)
+
                     # 测试克隆命令
                     echo "克隆仓库"
                     git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git /tmp/monorepo_split/clone_directory
@@ -85,6 +88,10 @@ jobs:
                     mkdir -p /tmp/monorepo_split/build_directory/.git
                     cp -r /tmp/monorepo_split/clone_directory/.git /tmp/monorepo_split/build_directory/
 
+                    # 返回到初始目录
+                    cd $INITIAL_DIR
+
+                    # 清理克隆目录
                     rm -rf /tmp/monorepo_split/clone_directory
 
                     echo "复制package内容到build_directory"
@@ -115,6 +122,10 @@ jobs:
                         echo "No files to change"
                     fi
 
+                    # 返回到初始目录
+                    cd $INITIAL_DIR
+
+                    # 清理临时目录
                     rm -rf /tmp/monorepo_split
 
 
