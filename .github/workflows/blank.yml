@@ -40,20 +40,26 @@ jobs:
             -   uses: actions/checkout@v4
                 with:
                     token: ${{ secrets.GITHUB_TOKEN }}
+                    fetch-depth: 0
 
-            -   name: Debug Info
+            -   name: Configure Git and directories
                 run: |
-                    echo "Workspace: ${{ github.workspace }}"
-                    echo "Repository: ${{ github.repository }}"
-                    echo "Ref: ${{ github.ref }}"
-                    echo "Token: ${{ secrets.GITHUB_TOKEN}}"
+                    # 配置 Git 安全目录
+                    git config --global --add safe.directory /github/workspace
+                    git config --global --add safe.directory /tmp/monorepo_split/build_directory
+                    git config --global --add safe.directory /tmp/monorepo_split/clone_directory
+                    
+                    # 设置目录权限
+                    mkdir -p /tmp/monorepo_split/clone_directory
+                    chmod -R 777 /tmp/monorepo_split
 
-            -   uses: "symplify/monorepo-split-github-action@2.1"
+            -   name: Split package
+                uses: "symplify/monorepo-split-github-action@2.1"
                 with:
                     package_directory: 'packages/${{ matrix.package.local_path }}'
                     repository_organization: 'mlzgldr'
                     repository_name: '${{ matrix.package.split_repository }}'
-                    #repository_host: github.com
+                    repository_host: github.com
                     user_name: "mlzgldr"
                     user_email: "mlzgldr@163.com"
 
