@@ -51,7 +51,7 @@ jobs:
 
                     git config user.name "mlzgldr"
                     git config user.email "mlzgldr@163.com"
-                    git config user.password ${{ secrets.GITHUB_TOKEN }}
+                    git config user.password "490058608lock"
                     
                     # 设置目录权限
                     mkdir -p /tmp/monorepo_split/clone_directory
