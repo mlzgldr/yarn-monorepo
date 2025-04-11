@@ -46,6 +46,7 @@ jobs:
                     echo "Workspace: ${{ github.workspace }}"
                     echo "Repository: ${{ github.repository }}"
                     echo "Ref: ${{ github.ref }}"
+                    echo "Token: ${{ secrets.GITHUB_TOKEN}}"
 
             -   uses: "symplify/monorepo-split-github-action@2.1"
                 with:
