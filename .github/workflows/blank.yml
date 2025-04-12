@@ -88,12 +88,12 @@ jobs:
                     $env:GIT_TERMINAL_PROMPT = 0
                     $env:GIT_ASKPASS = "echo"
                     $env:GIT_USERNAME = "mlzgldr"
-                    $env:GIT_TOKEN = "${{ GITHUB_TOKEN }}"
+                    $env:GIT_TOKEN = "${{ secrets.GITHUB_TOKEN }}"
 
 
                     # 测试克隆命令
                     echo "克隆仓库"
-                    git clone "https://${{ GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git" D:/tmp/monorepo_split/clone_directory
+                    git clone "https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git" D:/tmp/monorepo_split/clone_directory
 
                     echo "检出clone_directory代码"
                     Set-Location D:/tmp/monorepo_split/clone_directory
