@@ -89,7 +89,9 @@ jobs:
                         
                         ls -la /tmp/monorepo_split/clone_directory
                         echo "推送新分支 git push origin ${{ github.ref_name }}"
-                        git push https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git ${{ github.ref_name }}
+                        git remote remove origin
+                        git remote add origin https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
+                        git push -f origin ${{ github.ref_name }}
                     fi
 
                     echo "复制.git文件到build_directory"
@@ -128,7 +130,9 @@ jobs:
                         git commit --message "$COMMIT_MSG"
                         
                         echo "推送修改"
-                        git push https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git ${{ github.ref_name }}
+                        git remote remove origin
+                        git remote add origin https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
+                        git push -f origin ${{ github.ref_name }}
                     else
                         echo "没有变更"
                     fi
