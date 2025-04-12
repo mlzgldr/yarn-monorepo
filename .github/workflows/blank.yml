@@ -1,30 +1,22 @@
-# This is a basic workflow to help you get started with Actions
+name: 'Packages Split'
 
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# 设置权限
-permissions:
-  contents: write
-  pull-requests: write
+    push:
+        branches:
+            - main
+        tags:
+            - '*'
 
 env:
     # 1. for Github split
     GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
+    # 2. for Gitlab split
+    GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+
 jobs:
     packages_split:
-        runs-on: windows-latest
+        runs-on: ubuntu-latest
 
         strategy:
             fail-fast: false
@@ -43,127 +35,21 @@ jobs:
 
         steps:
             -   uses: actions/checkout@v4
+
+            # no tag
+            -
+                uses: "mlzgldr/better-split"
                 with:
-                    fetch-depth: 0
+                    # ↓ split "packages/easy-coding-standard" directory
+                    package_directory: 'packages/${{ matrix.package.local_path }}'
 
-            -   name: Install GitHub CLI
-                run: |
-                    # 下载 GitHub CLI 安装程序
-                    $url = "https://github.com/cli/cli/releases/download/v2.45.0/gh_2.45.0_windows_amd64.msi"
-                    $output = "D:\gh.msi"
-                    Invoke-WebRequest -Uri $url -OutFile $output
-                    
-                    # 安装 GitHub CLI
-                    Start-Process msiexec.exe -ArgumentList "/i $output /quiet" -Wait
-                    
-                    # 刷新环境变量
-                    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+                    # ↓ into https://github.com/symplify/easy-coding-standard repository
+                    repository_organization: 'mlzgldr'
+                    repository_name: '${{ matrix.package.split_repository }}'
 
-            -   name: Configure Git and directories
-                run: |
-                    # 配置 Git 安全目录
-                    git config --global --add safe.directory /github/workspace
-                    git config --global --add safe.directory D:/tmp/monorepo_split/build_directory
-                    git config --global --add safe.directory D:/tmp/monorepo_split/clone_directory
+                    # [optional, with "github.com" as default]
+                    repository_host: github.com
 
-                    git config user.name "mlzgldr"
-                    git config user.email "mlzgldr@163.com"
-                    
-                    # 重置所有 Git 认证配置
-                    git config --global --unset credential.helper
-                    git config --global --unset credential.useHttpPath
-                    git config --global --unset credential.https://github.com.username
-                    git config --global --unset credential.https://github.com.password
-                    git config --global --unset credential.https://github.com.token
-                    
-                    # 设置目录权限
-                    New-Item -ItemType Directory -Force -Path "D:/tmp/monorepo_split/clone_directory"
-                    New-Item -ItemType Directory -Force -Path "D:/tmp/monorepo_split/build_directory"
-                    icacls "D:/tmp/monorepo_split" /grant Everyone:F /T
-
-                    # 保存初始目录
-                    $INITIAL_DIR = Get-Location
-
-                    # 设置环境变量
-                    $env:GIT_TERMINAL_PROMPT = 0
-                    $env:GIT_ASKPASS = "echo"
-                    $env:GIT_USERNAME = "mlzgldr"
-                    $env:GIT_TOKEN = "${{ secrets.GITHUB_TOKEN }}"
-
-
-                    # 测试克隆命令
-                    echo "克隆仓库"
-                    git clone "https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git" D:/tmp/monorepo_split/clone_directory
-
-                    echo "检出clone_directory代码"
-                    Set-Location D:/tmp/monorepo_split/clone_directory
-                    git config user.name "mlzgldr"
-                    git config user.email "mlzgldr@163.com"
-                    git fetch
-
-                    # 修改分支检查逻辑
-                    $branchExists = git ls-remote --heads origin ${{ github.ref_name }} | Select-String -Pattern ${{ github.ref_name }}
-                    if ($branchExists) {
-                        echo "检出已存在的分支 ${{ github.ref_name }}"
-                        git checkout -b ${{ github.ref_name }} origin/${{ github.ref_name }}
-                    } else {
-                        echo "创建新分支 ${{ github.ref_name }}"
-                        git checkout -b ${{ github.ref_name }}
-                        echo "推送新分支 git push origin ${{ github.ref_name }}"
-                        #git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
-                        git push origin ${{ github.ref_name }}
-                    }
-
-                    echo "复制.git文件到build_directory"
-                    New-Item -ItemType Directory -Force -Path "D:/tmp/monorepo_split/build_directory/.git"
-                    Copy-Item -Path "D:/tmp/monorepo_split/clone_directory/.git/*" -Destination "D:/tmp/monorepo_split/build_directory/.git" -Recurse
-
-                    # 返回到初始目录
-                    Set-Location $INITIAL_DIR
-
-                    # 清理克隆目录
-                    Remove-Item -Path "D:/tmp/monorepo_split/clone_directory" -Recurse -Force
-
-                    echo "复制package内容到build_directory"
-                    Copy-Item -Path "${{ github.workspace }}/packages/${{ matrix.package.local_path }}/*" -Destination "D:/tmp/monorepo_split/build_directory" -Recurse
-
-                    echo "build_directory里的内容:"
-                    Get-ChildItem D:/tmp/monorepo_split/build_directory
-
-                    $COMMIT_MSG = git show -s --format=%B ${{ github.sha }}
-
-                    Set-Location D:/tmp/monorepo_split/build_directory
-
-                    # 显示所有分支
-                    echo "当前仓库的所有分支："
-                    git branch -a
-          
-                    # 重新设置 Git 用户信息
-                    git config user.name "mlzgldr"
-                    git config user.email "mlzgldr@163.com"
-
-                    # Check for changes
-                    git status
-                    git status --porcelain > D:/tmp/changes.txt
-                    
-                    if (Test-Path D:/tmp/changes.txt -PathType Leaf) {
-                        echo "添加变更"
-                        git add .
-                        
-                        echo "提交变更"
-                        git commit --message "$COMMIT_MSG"
-                        
-                        echo "推送修改"
-                        git push origin ${{ github.ref_name }}
-                    } else {
-                        echo "没有变更"
-                    }
-
-                    # 返回到初始目录
-                    Set-Location $INITIAL_DIR
-
-                    # 清理临时目录
-                    Remove-Item -Path "D:/tmp/monorepo_split" -Recurse -Force
-
-
-
+                    # ↓ the user signed under the split commit
+                    user_name: "mlzgldr"
+                    user_email: "mlzgldr@163.com"
