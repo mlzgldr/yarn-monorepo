@@ -15,7 +15,7 @@ on:
 
 env:
     # 1. for Github split
-    GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
     packages_split:
@@ -89,6 +89,7 @@ jobs:
                         
                         ls -la /tmp/monorepo_split/clone_directory
                         echo "推送新分支 git push origin ${{ github.ref_name }}"
+                        git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
                         git push origin ${{ github.ref_name }}
                     fi
 
@@ -128,7 +129,8 @@ jobs:
                         git commit --message "$COMMIT_MSG"
                         
                         echo "推送修改"
-                        git push --quiet origin ${{ github.ref_name }}
+                        git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
+                        git push origin ${{ github.ref_name }}
                     else
                         echo "没有变更"
                     fi
