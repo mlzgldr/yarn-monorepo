@@ -38,7 +38,7 @@ jobs:
 
             # no tag
             -
-                uses: "mlzgldr/better-split"
+                uses: "mlzgldr/better-split@main"
                 with:
                     # ↓ split "packages/easy-coding-standard" directory
                     package_directory: 'packages/${{ matrix.package.local_path }}'
