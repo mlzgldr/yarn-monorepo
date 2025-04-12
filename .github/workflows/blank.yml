@@ -81,6 +81,12 @@ jobs:
                     else
                         echo "创建新分支 ${{ github.ref_name }}"
                         git checkout -b ${{ github.ref_name }}
+                        
+                        # 创建一个初始提交
+                        echo "# ${{ matrix.package.split_repository }}" > README.md
+                        git add README.md
+                        git commit -m "Initial commit"
+                        
                         ls -la /tmp/monorepo_split/clone_directory
                         echo "推送新分支 git push origin ${{ github.ref_name }}"
                         git push origin ${{ github.ref_name }}
