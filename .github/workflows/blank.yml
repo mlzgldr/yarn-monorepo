@@ -42,6 +42,11 @@ jobs:
                     token: ${{ secrets.GITHUB_TOKEN }}
                     fetch-depth: 0
 
+            -   name: Install GitHub CLI
+                run: |
+                    winget install GitHub.cli
+                    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
             -   name: Configure Git and directories
                 run: |
                     # 配置 Git 安全目录
@@ -73,6 +78,9 @@ jobs:
                     $env:GIT_USERNAME = "mlzgldr"
                     $env:GIT_TOKEN = "${{ secrets.GITHUB_TOKEN }}"
 
+                    # 使用 GitHub CLI 进行认证
+                    echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+                    
                     # 使用 token 设置远程 URL
                     git remote set-url origin "https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git"
                     git push origin ${{ github.ref_name }}
