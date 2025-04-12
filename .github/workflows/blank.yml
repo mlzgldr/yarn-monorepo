@@ -13,6 +13,11 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+# 设置权限
+permissions:
+  contents: write
+  pull-requests: write
+
 env:
     # 1. for Github split
     GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
@@ -90,12 +95,12 @@ jobs:
                     echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
                     
                     # 使用 token 设置远程 URL
-                    git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git"
+                    git remote set-url origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git"
                     git push origin ${{ github.ref_name }}
 
                     # 测试克隆命令
                     echo "克隆仓库"
-                    git clone "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git" D:/tmp/monorepo_split/clone_directory
+                    git clone "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git" D:/tmp/monorepo_split/clone_directory
 
                     echo "检出clone_directory代码"
                     Set-Location D:/tmp/monorepo_split/clone_directory
