@@ -164,7 +164,7 @@ jobs:
                         git commit --message "$COMMIT_MSG"
                         
                         echo "推送修改"
-                        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
+                        git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
                         git push origin ${{ github.ref_name }}
                     } else {
                         echo "没有变更"
