@@ -92,10 +92,7 @@ jobs:
 
                     # 使用 GitHub CLI 进行认证
                     echo "${{ github.token }}" | gh auth login --with-token
-                    
-                    # 使用 token 设置远程 URL
-                    git remote set-url origin "https://${{ github.actor }}:${{ github.token }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git"
-                    git push origin ${{ github.ref_name }}
+
 
                     # 测试克隆命令
                     echo "克隆仓库"
@@ -123,7 +120,7 @@ jobs:
                         
                         Get-ChildItem D:/tmp/monorepo_split/clone_directory
                         echo "推送新分支 git push origin ${{ github.ref_name }}"
-                        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
+                        git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
                         git push origin ${{ github.ref_name }}:${{ github.ref_name}}
                     }
 
