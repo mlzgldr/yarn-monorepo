@@ -78,10 +78,11 @@ jobs:
                     git branch -a
 
                     # 修改分支检查逻辑
-                    if git ls-remote --heads origin ${{ github.ref_name }} | grep -q ${{ github.ref_name }}; then
+                    $branchExists = git ls-remote --heads origin ${{ github.ref_name }} | Select-String -Pattern ${{ github.ref_name }}
+                    if ($branchExists) {
                         echo "检出已存在的分支 ${{ github.ref_name }}"
                         git checkout -b ${{ github.ref_name }} origin/${{ github.ref_name }}
-                    else
+                    } else {
                         echo "创建新分支 ${{ github.ref_name }}"
                         git checkout -b ${{ github.ref_name }}
                         
@@ -94,7 +95,7 @@ jobs:
                         echo "推送新分支 git push origin ${{ github.ref_name }}"
                         git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
                         git push origin ${{ github.ref_name }}
-                    fi
+                    }
 
                     echo "复制.git文件到build_directory"
                     mkdir -p /tmp/monorepo_split/build_directory/.git
@@ -124,7 +125,7 @@ jobs:
                     git status
                     git status --porcelain > /tmp/changes.txt
                     
-                    if [ -s /tmp/changes.txt ]; then
+                    if (Test-Path /tmp/changes.txt -PathType Leaf) {
                         echo "添加变更"
                         git add .
                         
@@ -133,9 +134,9 @@ jobs:
                         
                         echo "推送修改"
                         git push origin ${{ github.ref_name }}
-                    else
+                    } else {
                         echo "没有变更"
-                    fi
+                    }
 
                     # 返回到初始目录
                     cd $INITIAL_DIR
