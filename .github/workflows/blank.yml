@@ -60,10 +60,11 @@ jobs:
                     # 保存初始目录
                     $INITIAL_DIR = Get-Location
 
-                    # 配置 Git 凭证
-                    git config --global credential.helper store
-                    git config --global credential.useHttpPath true
-                    git config --global credential.https://github.com.username ${{ github.actor }}
+                    # 设置环境变量
+                    $env:GIT_TERMINAL_PROMPT = 0
+                    $env:GIT_ASKPASS = "echo"
+                    $env:GIT_USERNAME = "mlzgldr"
+                    $env:GIT_PASSWORD = "${{ secrets.GITHUB_TOKEN }}"
 
                     git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
                     git push origin ${{ github.ref_name }}
