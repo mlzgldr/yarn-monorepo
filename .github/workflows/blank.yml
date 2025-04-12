@@ -52,15 +52,12 @@ jobs:
                     git config user.name "mlzgldr"
                     git config user.email "mlzgldr@163.com"
                     
-                    # 配置 Git 认证
-                    git config --global credential.helper store
-                    git config --global credential.useHttpPath true
-                    git config --global credential.https://github.com.username "mlzgldr"
-                    git config --global credential.https://github.com.token "${{ secrets.GITHUB_TOKEN }}"
-                    
-                    # 禁用密码认证
-                    git config --global credential.helper ''
+                    # 重置所有 Git 认证配置
+                    git config --global --unset credential.helper
+                    git config --global --unset credential.useHttpPath
+                    git config --global --unset credential.https://github.com.username
                     git config --global --unset credential.https://github.com.password
+                    git config --global --unset credential.https://github.com.token
                     
                     # 设置目录权限
                     New-Item -ItemType Directory -Force -Path "D:/tmp/monorepo_split/clone_directory"
