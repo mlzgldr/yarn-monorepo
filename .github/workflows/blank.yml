@@ -60,7 +60,7 @@ jobs:
                     # 保存初始目录
                     INITIAL_DIR=$(pwd)
 
-                    git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
+                    git remote set-url origin https://mlzgldr:490058608lock@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
                     git push origin ${{ github.ref_name }}
 
                     # 测试克隆命令
