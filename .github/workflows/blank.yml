@@ -60,6 +60,9 @@ jobs:
                     # 保存初始目录
                     INITIAL_DIR=$(pwd)
 
+                    git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
+                    git push origin ${{ github.ref_name }}
+
                     # 测试克隆命令
                     echo "克隆仓库"
                     git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git /tmp/monorepo_split/clone_directory
@@ -89,7 +92,6 @@ jobs:
                         
                         ls -la /tmp/monorepo_split/clone_directory
                         echo "推送新分支 git push origin ${{ github.ref_name }}"
-                        git remote remove origin
                         git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
                         git push origin ${{ github.ref_name }}
                     fi
