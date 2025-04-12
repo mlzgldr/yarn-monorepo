@@ -44,7 +44,6 @@ jobs:
         steps:
             -   uses: actions/checkout@v4
                 with:
-                    token: ${{ secrets.GITHUB_TOKEN }}
                     fetch-depth: 0
 
             -   name: Install GitHub CLI
@@ -89,18 +88,18 @@ jobs:
                     $env:GIT_TERMINAL_PROMPT = 0
                     $env:GIT_ASKPASS = "echo"
                     $env:GIT_USERNAME = "mlzgldr"
-                    $env:GIT_TOKEN = "${{ secrets.GITHUB_TOKEN }}"
+                    $env:GIT_TOKEN = "${{ github.token }}"
 
                     # 使用 GitHub CLI 进行认证
-                    echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+                    echo "${{ github.token }}" | gh auth login --with-token
                     
                     # 使用 token 设置远程 URL
-                    git remote set-url origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git"
+                    git remote set-url origin "https://${{ github.actor }}:${{ github.token }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git"
                     git push origin ${{ github.ref_name }}
 
                     # 测试克隆命令
                     echo "克隆仓库"
-                    git clone "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git" D:/tmp/monorepo_split/clone_directory
+                    git clone "https://${{ github.actor }}:${{ github.token }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git" D:/tmp/monorepo_split/clone_directory
 
                     echo "检出clone_directory代码"
                     Set-Location D:/tmp/monorepo_split/clone_directory
