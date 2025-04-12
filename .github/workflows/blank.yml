@@ -66,6 +66,12 @@ jobs:
                     $env:GIT_USERNAME = "mlzgldr"
                     $env:GIT_PASSWORD = "${{ secrets.GITHUB_TOKEN }}"
 
+                    # 配置 Git 使用 token
+                    git config --global credential.helper store
+                    git config --global credential.useHttpPath true
+                    git config --global credential.https://github.com.username ${{ github.actor }}
+                    git config --global credential.https://github.com.password ${{ secrets.GITHUB_TOKEN }}
+
                     git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
                     git push origin ${{ github.ref_name }}
 
@@ -78,10 +84,6 @@ jobs:
                     git config user.name "mlzgldr"
                     git config user.email "mlzgldr@163.com"
                     git fetch
-
-                    # 显示所有分支
-                    echo "当前仓库的所有分支："
-                    git branch -a
 
                     # 修改分支检查逻辑
                     $branchExists = git ls-remote --heads origin ${{ github.ref_name }} | Select-String -Pattern ${{ github.ref_name }}
@@ -122,6 +124,10 @@ jobs:
                     $COMMIT_MSG = git show -s --format=%B ${{ github.sha }}
 
                     Set-Location D:/tmp/monorepo_split/build_directory
+
+                    # 显示所有分支
+                    echo "当前仓库的所有分支："
+                    git branch -a
           
                     # 重新设置 Git 用户信息
                     git config user.name "mlzgldr"
