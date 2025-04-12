@@ -112,7 +112,7 @@ jobs:
                         Get-ChildItem D:/tmp/monorepo_split/clone_directory
                         echo "推送新分支 git push origin ${{ github.ref_name }}"
                         git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/mlzgldr/${{ matrix.package.split_repository }}.git
-                        git push origin ${{ github.ref_name }}
+                        git push origin ${{ github.ref_name }}:${{ github.ref_name}}
                     }
 
                     echo "复制.git文件到build_directory"
