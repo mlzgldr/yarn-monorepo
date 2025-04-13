@@ -22,7 +22,7 @@ $config = [
 foreach ($config as $item) {
     $localDirectory = $item[0];
     $remoteDirectory = $item[1];
-    $branch = $item[2] ?? 'master';
+    $branch = $item[2] ?? 'main';
     chdir($baseDir);
     exec("rm -rf $cloneDirectory");
     exec("rm -rf $buildDirectory");
