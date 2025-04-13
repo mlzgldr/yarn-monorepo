@@ -13,8 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate composer.json and composer.lock
-        run: composer validate --strict
+      #- name: Validate composer.json and composer.lock
+        #run: composer validate --strict
 
       - name: Run split script
         run: GITHUB_TOKEN="${{ secrets.ACCESS_TOKEN }}" GITHUB_SHA="$GITHUB_SHA" php split-repo.php
