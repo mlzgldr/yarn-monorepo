@@ -7,11 +7,6 @@ on:
     tags:
       - '*'
 
-env:
-  # 1. for Github split
-  GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-
-
 jobs:
   packages_split:
     runs-on: ubuntu-latest
@@ -22,4 +17,4 @@ jobs:
         #run: composer validate --strict
 
       - name: Run split script
-        run: GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}" GITHUB_SHA="$GITHUB_SHA" php split-repo.php
+        run: GITHUB_TOKEN="${{ secrets.ACCESS_TOKEN }}" GITHUB_SHA="$GITHUB_SHA" php split-repo.php
