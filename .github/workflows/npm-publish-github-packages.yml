@@ -33,7 +33,6 @@ jobs:
 
       - name: NPM PUBLISH
         working-directory: ./packages/demo-react-vite
-        run: npm ci
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
